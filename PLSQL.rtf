@@ -1,0 +1,923 @@
+{\rtf1\ansi\ansicpg1252\deff0\nouicompat\deflang1033\deflangfe1033{\fonttbl{\f0\fswiss\fprq2\fcharset0 Calibri;}}
+{\colortbl ;\red255\green255\blue0;}
+{\*\generator Riched20 10.0.19041}{\*\mmathPr\mnaryLim0\mdispDef1\mwrapIndent1440 }\viewkind4\uc1 
+\pard\brdrb\brdrs\brdrw15\brsp20 \nowidctlpar\sa200\sl276\slmult1\f0\fs22\lang9 SET SERVEROUTPUT ON;\par
+
+\pard\nowidctlpar\sa200\sl276\slmult1\highlight1 --BASIC INITIALISATION\highlight0\par
+DEFINE NUM5=234;\par
+DEFINE VAR1=53445;--NO CHRACTER 'ERWEFDF'\par
+VARIABLE NUM6 NUMBER;\par
+VARIABLE VAR2 VARCHAR2(10);\par
+DECLARE\par
+NUM7 NUMBER:=&NUM5;\par
+VAR3 VARCHAR2(10):=&VAR1;\par
+MESSAGE VARCHAR2(20):='MESSAGE SENT';\par
+NUM1 NUMBER :=45;\par
+NUM3 NUMBER :=3;\par
+NUM4 NUMBER;\par
+BEGIN\par
+:VAR2:=VAR3;\par
+:NUM6:=NUM7;\par
+NUM4:=NUM1*NUM3;\par
+DBMS_OUTPUT.PUT_LINE(MESSAGE ||' '||NUM4 ||''||:VAR2||''||:NUM6);\par
+END;\par
+/\par
+---------------------------------------------------------------------------------------------------------------------------\par
+\highlight1 --BASIC INITIALISATION\highlight0\par
+SELECT * FROM EMPLOYEES;\par
+DESC EMPLOYEES\par
+\par
+VARIABLE V_ENAME1 VARCHAR2(20);\par
+DECLARE\par
+V_EID EMPLOYEES.EID%TYPE;\par
+V_ENAME EMPLOYEES.ENAME%TYPE;\par
+V_SAL EMPLOYEES.SAL%TYPE; --APPLICABLE FOR SINGLE ROW OUTPUT\par
+BEGIN\par
+SELECT EID,ENAME,SAL INTO V_EID,V_ENAME,V_SAL FROM EMPLOYEES WHERE EID='E1';\par
+SELECT ENAME INTO :V_ENAME1 FROM EMPLOYEES WHERE EID='E1';\par
+DBMS_OUTPUT.PUT_LINE(V_EID||' '||V_ENAME ||' '||V_SAL);\par
+END;\par
+/\par
+--PRINT OUT SIDE\par
+PRINT V_ENAME1;\par
+---------------------------------------------------------------------------------------------------------------------------\par
+\highlight1 --INSERTING RECORDS IN THE TABLE  USING ANNONOMUS BLOCK\highlight0\par
+BEGIN\par
+INSERT INTO EMPLOYEES VALUES('E4','MOHNISH',7555,878);\par
+END;\par
+/\par
+SELECT * FROM EMPLOYEES;\par
+---------------------------------------------------------------------------------------------------------------------------\par
+\highlight1 --PROCEDURE\highlight0\par
+--IN OPERATOR\par
+CREATE OR REPLACE PROCEDURE PRO1\par
+(V_SAL EMPLOYEES.SAL%TYPE)\par
+IS\par
+V_SAL1 EMPLOYEES.SAL%TYPE;\par
+BEGIN\par
+SELECT SAL*100 INTO V_SAL1 FROM EMPLOYEES WHERE SAL=V_SAL;\par
+END;\par
+/\par
+EXECUTE PRO1(50000);\par
+---------------------------------------------------------------------------------------------------------------------------\par
+\highlight1 --INSERTING INTO TABLE USING PROCEDURE\highlight0\par
+CREATE OR REPLACE PROCEDURE PRO2\par
+(V_EID EMPLOYEES.EID%TYPE,\par
+ V_ENAME EMPLOYEES.ENAME%TYPE,\par
+ V_SAL EMPLOYEES.SAL%TYPE,\par
+ V_COMM EMPLOYEES.COMM%TYPE)\par
+ IS\par
+ BEGIN\par
+ INSERT INTO EMPLOYEES VALUES(V_EID,V_ENAME,V_SAL,V_COMM);\par
+ END;\par
+ /\par
+ EXECUTE PRO2('E4','MOHNISH',4324,34234);\par
+--------------------------------------------------------------------------------------------------------------------------- \par
+ \highlight1 --DELEATING RECORDS FROM PROCEDURE\highlight0\par
+ CREATE OR REPLACE PROCEDURE PRO3\par
+ (V_EID EMPLOYEES.EID%TYPE)\par
+ IS\par
+ BEGIN\par
+ DELETE FROM EMPLOYEES WHERE EID=V_EID;\par
+ END;\par
+ /\par
+ EXECUTE  PRO3('E4');\par
+ --------------------------------------------------------------------------------------------------------------------------\par
+ \highlight1 --UPDATE TABLE USING PROCEDURE\highlight0\par
+ CREATE OR REPLACE PROCEDURE PRO4\par
+ (V_EID EMPLOYEES.EID%TYPE)\par
+ IS\par
+ BEGIN\par
+ UPDATE EMPLOYEES SET ENAME='MOHNISH' WHERE EID=V_EID;\par
+ END;\par
+ /\par
+ EXECUTE PRO4('E2');\par
+ --------------------------------------------------------------------------------------------------------------------------\par
+ \highlight1 --INSERTING,DELETING,UPDATING INTO TABLE USING ANONYMOUS\highlight0\par
+ BEGIN\par
+   PRO2('E4','MOHNISH',4324,34234);\par
+   PRO3('E4');\par
+   PRO4('E2');\par
+ END;\par
+ /\par
+ --------------------------------------------------------------------------------------------------------------------------\par
+\highlight1 --OUT OPERATOR IN PROCEDURE\highlight0\par
+SELECT * FROM EMPLOYEES;\par
+\par
+CREATE OR REPLACE PROCEDURE PRO5\par
+(V_EID IN EMPLOYEES.EID%TYPE,\par
+ V_ENAME OUT EMPLOYEES.ENAME%TYPE,\par
+ V_SAL OUT EMPLOYEES.SAL%TYPE)\par
+ IS\par
+ BEGIN\par
+ SELECT ENAME,SAL INTO V_ENAME,V_SAL FROM EMPLOYEES WHERE EID=V_EID;\par
+ END;\par
+ /\par
+ VARIABLE A VARCHAR2(10);\par
+ VARIABLE B NUMBER;\par
+ EXECUTE PRO5('E1',:A,:B);\par
+ PRINT A;\par
+ PRINT B;\par
+  --------------------------------------------------------------------------------------------------------------------------\par
+\highlight1 --IN OUT PARAMETER IN PROCEDURE\highlight0\par
+CREATE OR REPLACE PROCEDURE PRO6\par
+(V_EID IN OUT EMPLOYEES.EID%TYPE,\par
+ V_ENAME OUT EMPLOYEES.ENAME%TYPE,\par
+ V_SAL OUT EMPLOYEES.SAL%TYPE)\par
+ IS\par
+ BEGIN\par
+ SELECT EID,ENAME,SAL INTO V_EID,V_ENAME,V_SAL FROM EMPLOYEES WHERE EID=V_EID;\par
+ END;\par
+ /\par
+ VARIABLE D VARCHAR2(10);\par
+ VARIABLE F NUMBER;\par
+ VARIABLE C VARCHAR2(10);\par
+ BEGIN\par
+ :C:='E1';\par
+ END;\par
+ /\par
+  EXECUTE PRO6(:C,:D,:F);\par
+PRINT C;\par
+PRINT D;\par
+PRINT F;\par
+--------------------------------------------------------------------------------------------------------------------------\par
+\highlight1 --ONE MORE EXAMPLE OF IN OUT PARAMETER\highlight0\par
+\par
+CREATE OR REPLACE PROCEDURE FORMAT_PHNO\par
+(V_PHNO IN OUT VARCHAR2)\par
+IS\par
+BEGIN\par
+V_PHNO :='('||SUBSTR(V_PHNO,1,2)||')'||'-'||SUBSTR(V_PHNO,3,4)||'-'||SUBSTR(V_PHNO,7,4);\par
+END;\par
+/\par
+VARIABLE G_PHNO VARCHAR2(25);\par
+DECLARE\par
+BEGIN\par
+:G_PHNO :='3323217223';\par
+END;\par
+/\par
+EXECUTE FORMAT_PHNO(:G_PHNO);\par
+PRINT G_PHNO;\par
+--------------------------------------------------------------------------------------------------------------------------\par
+ \highlight1 --CALLING PROCEDURE WITHIN PROCEDURE\highlight0\par
+ CREATE TABLE TS(MSG VARCHAR2(25));\par
+ DESC TS\par
+ SELECT * FROM TS;\par
+ \par
+ CREATE OR REPLACE PROCEDURE CHILD_PROC\par
+ IS\par
+ BEGIN\par
+ INSERT INTO TS VALUES('CHILD BLOCK INSERT');\par
+ COMMIT;\par
+ END;\par
+/\par
+CREATE OR REPLACE PROCEDURE PARENT_PROC\par
+ IS\par
+ BEGIN\par
+ INSERT INTO TS VALUES ('PARENT BLOCK INSERTED');\par
+ CHILD_PROC;\par
+ ROLLBACK;\par
+ END;\par
+ /\par
+ EXECUTE PARENT_PROC;\par
+ \par
+ SELECT * FROM TS\par
+ DELETE FROM TS;\par
+ COMMIT;\par
+ \highlight1 --USING PRAGMA AUTONOMOUS\highlight0\par
+CREATE OR REPLACE PROCEDURE PARENT_PROC\par
+ IS\par
+ BEGIN\par
+ INSERT INTO TS VALUES ('PARENT BLOCK INSERTED');\par
+ CHILD_PROC;\par
+ END;\par
+ /\par
+CREATE OR REPLACE PROCEDURE CHILD_PROC\par
+ IS\par
+ PRAGMA AUTONOMOUS_TRANSACTION;--APPLICABLE TO CHILD BLOCK\par
+ BEGIN\par
+ INSERT INTO TS VALUES('CHILD BLOCK');\par
+ COMMIT;\par
+ END;\par
+ /\par
+EXECUTE PARENT_PROC;\par
+ SELECT * FROM TS;\par
+ROLLBACK;\par
+------------------------------------------------------------------------------------------------------------------------------------------\par
+\highlight1 --FUNCTION\highlight0\par
+CREATE OR REPLACE FUNCTION GST\par
+(V_VALUE NUMBER)\par
+RETURN NUMBER\par
+IS\par
+BEGIN\par
+RETURN (V_VALUE*.05);\par
+END;\par
+/\par
+SELECT GST(100) FROM DUAL;\par
+SELECT * FROM PRODUCTS ORDER BY PID;\par
+SELECT SUM(PRICE) FROM PRODUCTS;\par
+SELECT PID,PNM,QTY,PRICE,GST(PRICE) GST FROM PRODUCTS ORDER BY PID;\par
+SELECT PID,PNM,QTY,PRICE,GST(PRICE) GST,(PRICE+GST(PRICE))*QTY NETPAY FROM PRODUCTS ORDER BY PID;\par
+\highlight1 --MORE EXAMPLE\highlight0\par
+--creating a table\par
+CREATE TABLE EMPLOYEE_DTLS(\par
+EID VARCHAR2(10) primary key,\par
+ENAME VARCHAR2(25),\par
+BASIC number(11,2));\par
+\par
+insert into EMPLOYEE_DTLS values('E1','ARUP',30000.00);\par
+insert into EMPLOYEE_DTLS values('E2','SUMAN',40000.00);\par
+\par
+ CREATE OR REPLACE FUNCTION CALCULATE_SAL\par
+ (V_BASIC NUMBER)\par
+ RETURN NUMBER\par
+ IS\par
+ V_DA NUMBER(11,2);\par
+ V_HRA NUMBER(11,2);\par
+ V_TOTAL NUMBER(11,2);\par
+ BEGIN\par
+ V_DA :=V_BASIC*.50;\par
+ V_HRA :=V_BASIC*.25;\par
+ V_TOTAL :=V_BASIC+V_DA+V_HRA;\par
+ RETURN V_TOTAL;\par
+ END;\par
+ SELECT CALCULATE_SAL(100) FROM DUAL;\par
+ SELECT * FROM EMPLOYEE_DTLS;\par
+ SELECT EID,ENM,BASIC,CALCULATE_SAL(BASIC) GROSSPAY FROM EMPLOYEE_DTLS;\par
+------------------------------------------------------------------------------------------------------------------------------------------\par
+\highlight1 --TRIGGER\highlight0\par
+--CREATING TABLE TEST\par
+CREATE TABLE TEST\par
+(TESTID VARCHAR2(10) PRIMARY KEY,\par
+ TNM    VARCHAR2(25),\par
+ PRICE  NUMBER(11,2),\par
+ TDT    DATE);\par
+\par
+SELECT * FROM TEST\par
+\par
+CREATE OR REPLACE TRIGGER TR1 BEFORE INSERT ON TEST FOR EACH ROW\par
+BEGIN\par
+IF(TO_CHAR(:NEW.TDT,'DY')='SUN') THEN\par
+ RAISE_APPLICATION_ERROR(768,'TEST IS NOT POSSIBLE ON SUNDAY');\par
+END IF;\par
+END;\par
+/\par
+ INSERT INTO TEST VALUES('T1','X-RAY',500,SYSDATE);\par
+------------------------------------------------------------------------------------------------------------------------------------------\par
+\highlight1 --INSERTING DATA OF ONE TABLE TO ANOTHER USING TRIGGER\highlight0\par
+CREATE TABLE PATIENT_MASTER\par
+(PID VARCHAR2(10)PRIMARY KEY,\par
+PNM VARCHAR2(25),\par
+PHNO VARCHAR2(10));\par
+DESC PATIENT_MASTER;\par
+\par
+CREATE TABLE TEST_DETAILS \par
+(TESTID VARCHAR2(10),\par
+TNM NUMBER(10) GENERATED ALWAYS AS IDENTITY START WITH 100 INCREMENT BY 20,\par
+PRICE NUMBER(11,2),\par
+PID VARCHAR2(10),\par
+PNM VARCHAR2(25),\par
+PHNO VARCHAR2(10));\par
+DESC TEST_DETAILS;\par
+\par
+CREATE OR REPLACE TRIGGER TR2 AFTER INSERT ON PATIENT_MASTER FOR EACH ROW\par
+BEGIN\par
+INSERT INTO TEST_DETAILS(PID,PNM,PHNO) VALUES(:NEW.PID,:NEW.PNM,:NEW.PHNO);\par
+END;\par
+\par
+INSERT INTO PATIENT_MASTER VALUES('P1','RAMAN','2222');\par
+\par
+SELECT * FROM PATIENT_MASTER;\par
+SELECT * FROM TEST_DETAILS;\par
+------------------------------------------------------------------------------------------------------------------------------------------\par
+\highlight1 --WE CAN DIRECTLY UPDATE TEST_DETAILS IF ANY MISTAKE\highlight0\par
+UPDATE TEST_DETAILS SET TESTID='T1' WHERE PID='P1';\par
+UPDATE PATIENT_MASTER SET PID='P2' WHERE PID='P1';\par
+\par
+--AUTO UPDATING USING TRIGGER\par
+CREATE TABLE ACCOUNTS (\par
+ACCNO VARCHAR2(10) PRIMARY KEY,\par
+CNAME VARCHAR2(25),\par
+BALANCE NUMBER(11,2)\par
+);\par
+CREATE TABLE TRANSACTIONS \par
+(TRANSID VARCHAR2(10)PRIMARY KEY,\par
+ACCNO VARCHAR2(10),\par
+TMODE CHAR(1)CHECK(TMODE IN('D','C')),\par
+AMOUNT NUMBER(11,2));\par
+\par
+INSERT INTO ACCOUNTS VALUES('100','ARUP',15000);\par
+INSERT INTO ACCOUNTS VALUES('101','ROBIN',20000);\par
+\par
+CREATE OR REPLACE TRIGGER TR3 AFTER INSERT ON TRANSACTIONS FOR EACH ROW\par
+BEGIN\par
+IF(:NEW.TMODE='D')THEN\par
+UPDATE ACCOUNTS SET BALANCE=BALANCE-:NEW.AMOUNT WHERE ACCNO=:NEW.ACCNO;\par
+ELSE\par
+UPDATE ACCOUNTS SET BALANCE=BALANCE+:NEW.AMOUNT WHERE ACCNO=:NEW.ACCNO;\par
+END IF;\par
+END;\par
+SELECT * FROM ACCOUNTS;\par
+SELECT * FROM TRANSACTIONS;\par
+\par
+INSERT INTO TRANSACTIONS VALUES('3NN','101','D',288);\par
+------------------------------------------------------------------------------------------------------------------------------------------\par
+\highlight1 --UPDATING AGGREGATE FUNCTION USING TRIGGER\highlight0\par
+\par
+select * from employees1;\par
+\par
+CREATE OR REPLACE VIEW V_EMPLOYEES1 AS \par
+SELECT DESIGN,SUM(SAL) TORALSAL FROM EMPLOYEES1 GROUP BY(DESIGN);\par
+\par
+CREATE OR REPLACE TRIGGER  TR5 INSTEAD OF UPDATE ON  V_EMPLOYEES1 FOR EACH ROW\par
+BEGIN\par
+UPDATE EMPLOYEES1 SET DESIGN=:NEW.DESIGN WHERE DESIGN=:OLD.DESIGN;\par
+END;\par
+UPDATE V_EMPLOYEES1 SET DESIGN='DEVELOPER' WHERE DESIGN='MANAGER';   --AGREGATE WILL NOT BE UPDATE USING VIEWS\par
+\par
+--RESTRUCTION USING TRIGGER\par
+\par
+SELECT * FROM EMPLOYEES;\par
+------------------------------------------------------------------------------------------------------------------------------------------\par
+CREATE OR REPLACE TRIGGER RES_TRIG BEFORE UPDATE ON EMPLOYEES2 FOR EACH ROW\par
+WHEN(NEW.SAL<OLD.SAL)\par
+BEGIN\par
+RAISE_APPLICATION_ERROR(-20001,'DECREASE  OF SALARY IS NOT POSSIBLE');\par
+END;\par
+UPDATE EMPLOYEES2 SET SAL=40000 WHERE EID='E1';\par
+------------------------------------------------------------------------------------------------------------------------------------------\par
+\highlight1 --STATEMENT TRIGGER\highlight0\par
+\par
+CREATE OR REPLACE TRIGGER SECURE_EMPLOYEES3 BEFORE INSERT ON EMPLOYEES3\par
+BEGIN\par
+IF (TO_CHAR(SYSDATE,'DY') IN('MON','SUN')) OR (TO_CHAR(SYSDATE,'HH24:MI')NOT BETWEEN '08:00' AND '18:00') \par
+THEN\par
+RAISE_APPLICATION_ERROR(-20091,'DATA SHOULD BE INSERTED BUSINESS HOUR EXCEPT SATURDAY AND SUNDAY');\par
+END IF;\par
+END;\par
+/\par
+INSERT INTO EMPLOYEES3 VALUES('E5','AYAN',40000,1000);\par
+------------------------------------------------------------------------------------------------------------------------------------------\par
+\highlight1 --EXCEPTON HANDLING\highlight0\par
+CREATE TABLE TESTS\par
+(TID VARCHAR2(10) PRIMARY KEY,\par
+TNM VARCHAR2(25),\par
+PRICE NUMBER(11,2));\par
+INSERT INTO  TESTS VALUES('T1','X_RAY',500);\par
+INSERT INTO  TESTS VALUES('T2','SUGAR',400);\par
+INSERT INTO  TESTS VALUES('T3','SCAN',3000);\par
+COMMIT;\par
+SELECT * FROM TESTS;\par
+\par
+CREATE TABLE TESTSLOG\par
+(TNM VARCHAR2(25));\par
+SELECT * FROM TESTSLOG;\par
+\par
+\highlight1 --SEARCH EXCEPTION\highlight0\par
+\par
+CREATE OR REPLACE PROCEDURE CHECK_TESTS\par
+(V_TNM TESTS.TNM%TYPE)\par
+IS\par
+V_TNM1 TESTS.TNM%TYPE;\par
+BEGIN\par
+SELECT TNM INTO V_TNM1 FROM TESTS WHERE TNM=V_TNM;\par
+IF(V_TNM1 IS NOT NULL) THEN\par
+DBMS_OUTPUT.PUT_LINE('TESTS IS POSSIBLE');\par
+END IF;\par
+EXCEPTION\par
+WHEN NO_DATA_FOUND THEN\par
+DBMS_OUTPUT.PUT_LINE('TESTS IS NOT POSSIBLE');\par
+INSERT INTO TESTSLOG VALUES(V_TNM);\par
+COMMIT;\par
+END;\par
+/\par
+EXECUTE CHECK_TESTS('SUGAR')\par
+SELECT *FROM TESTSLOG;\par
+------------------------------------------------------------------------------------------------------------------------------------------\par
+\highlight1 --USER DEFINED EXCEPTION\highlight0\par
+CREATE OR REPLACE PROCEDURE PURCHASE_PRODUCT\par
+(V_PID STOCK.PID%TYPE,\par
+V_PQTY STOCK.PQTY%TYPE)\par
+IS\par
+V_PQTY1 STOCK.PQTY%TYPE;\par
+OUT_OF_STOCK EXCEPTION;\par
+BEGIN\par
+SELECT PQTY INTO V_PQTY1 FROM STOCK WHERE PID=V_PID;\par
+IF(V_PQTY > V_PQTY1) THEN\par
+RAISE OUT_OF_STOCK;\par
+ELSE\par
+UPDATE STOCK SET PQTY=PQTY-V_PQTY WHERE PID=V_PID;\par
+COMMIT;\par
+DBMS_OUTPUT.PUT_LINE('STOCK UPDATED SUCCESSFULLY');\par
+END IF;\par
+EXCEPTION\par
+WHEN OUT_OF_STOCK THEN\par
+DBMS_OUTPUT.PUT_LINE('OUT OF STOCK');\par
+DBMS_OUTPUT.PUT_LINE('CURRENT STOCK IS'||V_PQTY1);\par
+END;\par
+SELECT * FROM STOCK;\par
+EXECUTE PURCHASE_PRODUCT('P1',1);\par
+------------------------------------------------------------------------------------------------------------------------------------------\par
+\highlight1 ---PACKAGE SPECIFICATION CREATION\highlight0\par
+\par
+CREATE OR REPLACE PACKAGE PURCHASE_PCKT AS\par
+PROCEDURE ADD_ITEM\par
+(V_ICODE ITEM_MASTER.ICODE%TYPE,\par
+V_INAME ITEM_MASTER.INAME%TYPE,\par
+V_IQTY ITEM_MASTER.IQTY%TYPE,\par
+V_PRICE ITEM_MASTER.PRICE%TYPE);\par
+PROCEDURE DEL_ITEM\par
+(V_ICODE ITEM_MASTER.ICODE%TYPE);\par
+PROCEDURE UPD_ITEM_MASTER\par
+(V_ICODE ITEM_MASTER.ICODE%TYPE,\par
+V_INAME ITEM_MASTER.INAME%TYPE,\par
+V_IQTY ITEM_MASTER.IQTY%TYPE,\par
+V_PRICE ITEM_MASTER.PRICE%TYPE);\par
+PROCEDURE SEARCH_ITEM\par
+(V_INAME ITEM_MASTER.INAME%TYPE);\par
+FUNCTION SERVICE_TAX\par
+(V_VALUE NUMBER)\par
+RETURN NUMBER;\par
+END PURCHASE_PCKT;\par
+\par
+\highlight1 ---PACKAGE BODY CREATION\highlight0\par
+\par
+CREATE OR REPLACE PACKAGE BODY PURCHASE_PCKT AS\par
+PROCEDURE ADD_ITEM\par
+(V_ICODE ITEM_MASTER.ICODE%TYPE,\par
+V_INAME ITEM_MASTER.INAME%TYPE,\par
+V_IQTY ITEM_MASTER.IQTY%TYPE,\par
+V_PRICE ITEM_MASTER.PRICE%TYPE)\par
+IS\par
+BEGIN\par
+INSERT INTO ITEM_MASTER VALUES(V_ICODE,V_INAME,V_IQTY,V_PRICE);\par
+COMMIT;\par
+END;\par
+PROCEDURE DEL_ITEM\par
+(V_ICODE ITEM_MASTER.ICODE%TYPE)\par
+IS\par
+BEGIN\par
+DELETE FROM ITEM_MASTER WHERE ICODE=V_ICODE;\par
+COMMIT;\par
+END;\par
+PROCEDURE UPD_ITEM_MASTER\par
+(V_ICODE ITEM_MASTER.ICODE%TYPE,\par
+V_INAME ITEM_MASTER.INAME%TYPE,\par
+V_IQTY ITEM_MASTER.IQTY%TYPE,\par
+V_PRICE ITEM_MASTER.PRICE%TYPE)\par
+IS\par
+BEGIN\par
+UPDATE ITEM_MASTER SET INAME=V_INAME,IQTY=V_IQTY,PRICE=V_PRICE WHERE ICODE=V_ICODE;\par
+COMMIT;\par
+END;\par
+PROCEDURE SEARCH_ITEM\par
+(V_INAME ITEM_MASTER.INAME%TYPE)\par
+IS\par
+V_INAME1 ITEM_MASTER.INAME%TYPE;\par
+BEGIN\par
+SELECT INAME INTO V_INAME1 FROM ITEM_MASTER WHERE INAME=V_INAME;\par
+IF(V_INAME1 IS NOT NULL) THEN\par
+DBMS_OUTPUT.PUT_LINE('ITEM IS AVAILABLE');\par
+END IF;\par
+EXCEPTION\par
+WHEN NO_DATA_FOUND THEN\par
+DBMS_OUTPUT.PUT_LINE('ITEM IS NOT AVAILABLE');\par
+END;\par
+FUNCTION SERVICE_TAX\par
+(V_VALUE NUMBER)\par
+RETURN NUMBER\par
+IS\par
+BEGIN\par
+RETURN(V_VALUE*.05);\par
+END;\par
+END PURCHASE_PCKT;\par
+\par
+\highlight1 --EXECUTING IN ONE GO\highlight0\par
+SELECT * FROM ITEM_MASTER;\par
+\par
+EXECUTE PURCHASE_PCKT.ADD_ITEM('I2','T-SHIRT',12,750);\par
+EXECUTE PURCHASE_PCKT.DEL_ITEM('I2');\par
+EXECUTE PURCHASE_PCKT.UPD_ITEM_MASTER('I1','SOAP',100,150);\par
+EXECUTE PURCHASE_PCKT.SEARCH_ITEM('SOAP');\par
+SELECT ICODE,INAME,IQTY,PRICE,PURCHASE_PCKT.SERVICE_TAX(PRICE) SERVICE_TAX,PRICE+PURCHASE_PCKT.SERVICE_TAX(PRICE) PRICEPERITEM FROM ITEM_MASTER;\par
+SELECT ICODE,INAME,IQTY,PRICE,PURCHASE_PCKT.SERVICE_TAX(PRICE) SERVICE_TAX,PRICE+PURCHASE_PCKT.SERVICE_TAX(PRICE) PRICEPERITEM,(PRICE+PURCHASE_PCKT.SERVICE_TAX(PRICE))*IQTY NETPRICE FROM ITEM_MASTER;\par
+------------------------------------------------------------------------------------------------------------------------------------------\par
+\highlight1 --IF ELSIF ELSE\highlight0  \par
+DEFINE P_DEPTNO='10' \par
+DECLARE \par
+V_DEPTNO VARCHAR2(10) :='&P_DEPTNO';\par
+BEGIN \par
+IF V_DEPTNO='10' THEN \par
+DBMS_OUTPUT.PUT_LINE('CSE'); \par
+ELSIF V_DEPTNO='20' THEN\par
+DBMS_OUTPUT.PUT_LINE('IT'); \par
+ELSE \par
+DBMS_OUTPUT.PUT_LINE('INVALID DEPARTMENT');\par
+END IF; END;\par
+------------------------------------------------------------------------------------------------------------------------------------------\par
+\highlight1 ---CASE EXPRESSION\highlight0\par
+DEFINE P_GRADE='A' \par
+DECLARE \par
+V_GRADE CHAR(1) :=UPPER('&P_GRADE');\par
+V_PERFORMANCE VARCHAR2(20); \par
+BEGIN \par
+V_PERFORMANCE := CASE\par
+WHEN V_GRADE='A' THEN 'EXCELLENT'\par
+WHEN V_GRADE='B'THEN 'GOOD' \par
+WHEN V_GRADE='C' THEN 'MODERATE'\par
+ELSE 'NO SUCH GRADE' \par
+END; \par
+DBMS_OUTPUT.PUT_LINE('GRADE:'||' '||V_PERFORMANCE); \par
+END;\par
+\highlight1\fs24 More Example\highlight0\par
+declare\par
+v_TMarks number(3) :=&T_marks;--it will ask user input\par
+v_Grade char(1);\par
+v_avg decimal(5,2);\par
+begin \par
+v_avg := v_TMarks/5;\par
+Case \par
+  When ((v_avg<30)and(v_TMarks/5>=0)) then\par
+       v_Grade := 'F';\par
+       dbms_output.put_line(v_Grade);\par
+   When ((v_TMarks/5 >=30)and(v_TMarks/5 <40)) then\par
+       v_Grade := 'E';\par
+       dbms_output.put_line(v_Grade); \par
+  When ((v_TMarks/5 >=40)and(v_TMarks/5 <60)) then\par
+       v_Grade := 'D';\par
+       dbms_output.put_line(v_Grade); \par
+  When ((v_TMarks/5 >=60)and(v_TMarks/5 <80)) then\par
+       v_Grade := 'C';\par
+       dbms_output.put_line(v_Grade); \par
+  When ((v_TMarks/5 >=80)and(v_TMarks/5 <90)) then\par
+       v_Grade := 'B';\par
+       dbms_output.put_line(v_Grade); \par
+  When ((v_TMarks/5 >=90)and(v_TMarks/5 <=100)) then\par
+       v_Grade := 'A';\par
+       dbms_output.put_line(v_Grade); \par
+  else \par
+       dbms_output.put_line('Invalid Marks is taken'); \par
+end case;\par
+end;\par
+\fs22 ------------------------------------------------------------------------------------------------------------------------------------------\par
+\highlight1 --BASIC LOOP\highlight0\par
+DECLARE \par
+I NUMBER(3):=1; \par
+BEGIN\par
+LOOP \par
+DBMS_OUTPUT.PUT_LINE('I:'||I); \par
+I:=I+1;\par
+EXIT WHEN I>10;\par
+END LOOP;\par
+END;\par
+------------------------------------------------------------------------------------------------------------------------------------------\par
+\highlight1 --WHILE LOOP\highlight0\par
+DECLARE \par
+I NUMBER(3) :=1;\par
+BEGIN \par
+WHILE(I<=10)\par
+LOOP \par
+DBMS_OUTPUT.PUT_LINE('I:'||I); \par
+I:=I+1;\par
+END LOOP;\par
+END;\par
+------------------------------------------------------------------------------------------------------------------------------------------\par
+\highlight1 --FOR LOOP\highlight0\par
+DECLARE \par
+I NUMBER(3) :=1;\par
+BEGIN\par
+FOR I IN 1..10 \par
+LOOP \par
+DBMS_OUTPUT.PUT_LINE('I:'||I); \par
+END LOOP;\par
+END;\par
+------------------------------------------------------------------------------------------------------------------------------------------\par
+\highlight1 --CONTINUE STATEMENT\highlight0\par
+DECLARE \par
+I NUMBER(3) :=1;\par
+BEGIN\par
+FOR I IN 1..10\par
+LOOP \par
+IF I=3 THEN CONTINUE;\par
+END IF;\par
+DBMS_OUTPUT.PUT_LINE('I:'||I); \par
+END LOOP;\par
+END;\par
+------------------------------------------------------------------------------------------------------------------------------------------\par
+--CREATING A TABLE\par
+CREATE TABLE EMPP\par
+(EID VARCHAR2(10)PRIMARY KEY,\par
+ENAME VARCHAR2(25),\par
+DESIG VARCHAR2(25),\par
+SAL NUMBER(11,2),\par
+DEPTNO NUMBER(3)); \par
+\par
+CREATE TABLE DEPTT \par
+(DEPTNO NUMBER(3) PRIMARY KEY,\par
+DNAME VARCHAR2(25),\par
+LOC VARCHAR2(25));\par
+\par
+DESC DEPTT;\par
+DESC EMPP; \par
+\par
+INSERT INTO DEPTT VALUES(10,'HR','KOLKATA');\par
+INSERT INTO DEPTT VALUES(20,'IT','MUMBAI');\par
+INSERT INTO DEPTT VALUES(30,'SALES','CHENNAI');\par
+COMMIT;\par
+SELECT * FROM DEPTT; \par
+\par
+INSERT INTO EMPP VALUES('E1','SUMAN','MANAGER',50000,10);\par
+INSERT INTO EMPP VALUES('E2','ALOKE','MANAGER',60000,20); \par
+INSERT INTO EMPP VALUES('E3','SUMANA','MANAGER',40000,30);\par
+INSERT INTO EMPP VALUES('E4','AYAN','ANALYST',35000,10);\par
+INSERT INTO EMPP VALUES('E5','AJOY','DEVELOPER',65000,20);\par
+INSERT INTO EMPP VALUES('E6','RAJAT','EXECUTIVE',30000,30);\par
+COMMIT;\par
+SELECT * FROM EMPP;\par
+\par
+\highlight1 --CURSOR WITH BASIC LOOP\highlight0\par
+CREATE OR REPLACE PROCEDURE TEST_CUR \par
+AS\par
+CURSOR C1 IS SELECT * FROM EMPP;\par
+X EMPP%ROWTYPE; \par
+BEGIN \par
+OPEN C1;\par
+LOOP FETCH C1 INTO X; \par
+EXIT WHEN(C1%NOTFOUND);\par
+DBMS_OUTPUT.PUT_LINE(X.ENAME||' '||X.SAL); \par
+END LOOP;\par
+END; \par
+EXECUTE TEST_CUR;\par
+------------------------------------------------------------------------------------------------------------------------------------------\par
+\highlight1 --FOR USING CURSOR HERE IMPLICIT OPEN AND FETCH TOOK PLACE\highlight0\par
+CREATE OR REPLACE PROCEDURE TEST_CUR1 \par
+AS \par
+CURSOR C1 IS SELECT * FROM EMPP;\par
+X EMPP%ROWTYPE; \par
+BEGIN\par
+FOR X IN C1 \par
+LOOP \par
+DBMS_OUTPUT.PUT_LINE(X.ENAME||' '||X.SAL); \par
+END LOOP;\par
+END;\par
+EXECUTE TEST_CUR1;\par
+------------------------------------------------------------------------------------------------------------------------------------------\par
+\highlight1 --PARAMETERISED CURSOR\highlight0\par
+SELECT * FROM EMPP;\par
+SELECT * FROM DEPTT;\par
+\par
+CREATE OR REPLACE PROCEDURE PAR_CUR \par
+AS \par
+CURSOR C1(V_DEPTNO DEPTT.DEPTNO%TYPE) IS SELECT E.ENAME,E.DESIG,E.SAL,D.DEPTNO,D.DNAME,D.LOC FROM EMPP E,DEPTT D\par
+WHERE E.DEPTNO=D.DEPTNO AND\par
+D.DEPTNO=V_DEPTNO; \par
+X C1%ROWTYPE;\par
+BEGIN \par
+FOR X IN C1(10) \par
+LOOP \par
+DBMS_OUTPUT.PUT_LINE(X.ENAME||' '||X.SAL||' '||X.DEPTNO||' '||X.DNAME);\par
+END LOOP;\par
+FOR X IN C1(20) \par
+LOOP \par
+DBMS_OUTPUT.PUT_LINE(X.ENAME||' ' ||X.SAL||' '||X.DEPTNO||' '||X.DNAME);\par
+END LOOP;\par
+END; \par
+EXECUTE PAR_CUR;\par
+------------------------------------------------------------------------------------------------------------------------------------------\par
+\highlight1 ---REF CURSOR\highlight0\par
+CREATE OR REPLACE PROCEDURE REF_CUR_DEMO\par
+AS\par
+TYPE R1 IS REF CURSOR;\par
+MY_CUR R1;     --R1 is real cursor but it is referred to MY_CUR\par
+EMP_REC EMPP%ROWTYPE;\par
+DEPT_REC DEPTT%ROWTYPE;\par
+BEGIN\par
+OPEN MY_CUR FOR SELECT * FROM EMPP;\par
+LOOP\par
+FETCH MY_CUR INTO EMP_REC;\par
+EXIT WHEN(MY_CUR%NOTFOUND);\par
+DBMS_OUTPUT.PUT_LINE(EMP_REC.ENAME||' '||EMP_REC.SAL);\par
+END LOOP;\par
+OPEN MY_CUR FOR SELECT * FROM DEPTT;\par
+LOOP\par
+FETCH MY_CUR INTO DEPT_REC;\par
+EXIT WHEN(MY_CUR%NOTFOUND);\par
+DBMS_OUTPUT.PUT_LINE(DEPT_REC.DEPTNO||' '||DEPT_REC.DNAME);\par
+END LOOP;\par
+END;\par
+EXECUTE REF_CUR_DEMO;\par
+------------------------------------------------------------------------------------------------------------------------------------------\par
+\highlight1 ---BATCH JOB\highlight0\par
+create table activity_logs\par
+(log_id number,\par
+creation_date Date);\par
+DESC ACTIVITY_LOGS;\par
+SELECT * FROM ACTIVITY_LOGS;\par
+\highlight1 ---CREATE JOB\highlight0\par
+BEGIN\par
+DBMS_SCHEDULER.create_job(\par
+job_name => 'fourth_job',\par
+job_type => 'PLSQL_BLOCK',\par
+job_action => 'declare\par
+              begin\par
+              insert into activity_logs values(1,sysdate);commit;end;',\par
+start_date => SYSTIMESTAMP,\par
+repeat_interval=> 'freq=SECONDLY;interval=5',\par
+end_date => NULL,\par
+enabled => TRUE,\par
+comments => 'my fourth test job');\par
+END;\par
+SELECT * FROM ACTIVITY_LOGS;\par
+select job_name,enabled,run_count from user_scheduler_jobs;\par
+\par
+\highlight1 ---DROP THE JOB\highlight0\par
+declare\par
+    job_doesnt_exist EXCEPTION;\par
+    PRAGMA EXCEPTION_INIT( job_doesnt_exist, -27475 );\par
+begin\par
+    dbms_scheduler.drop_job(job_name => 'FOURTH_JOB');\par
+exception when job_doesnt_exist then\par
+null;\par
+end;\par
+------------------------------------------------------------------------------------------------------------------------------------------\par
+SELECT * FROM EMPLOYEES;\par
+\par
+CREATE TABLE EMPLOYEE50 AS SELECT * FROM EMPLOYEES WHERE 1=2;\par
+SELECT * FROM EMPLOYEE50;\par
+DESC EMPLOYEES;\par
+DESC EMPLOYEE50;\par
+INSERT INTO EMPLOYEE50(EID,ENAME,SAL,COMM) VALUES('E1','SUMAN',50000,1000);\par
+INSERT INTO EMPLOYEE50(EID,ENAME,SAL,COMM) VALUES('E2','SUMANA',45000,2000);\par
+INSERT INTO EMPLOYEE50(EID,ENAME,SAL,COMM) VALUES('E3','AJOY',55000,3000);\par
+INSERT INTO EMPLOYEE50(EID,ENAME,SAL,COMM) VALUES('E4','ALOKE',65000,4000);\par
+COMMIT;\par
+SELECT * FROM EMPLOYEE50;\par
+\par
+CREATE OR REPLACE PROCEDURE UPD_STATUS\par
+IS\par
+BEGIN\par
+UPDATE EMPLOYEE50 SET STATUS='DONE';\par
+COMMIT;\par
+END;\par
+EXECUTE UPD_STATUS;\par
+\par
+SELECT * FROM EMPLOYEE50;\par
+UPDATE EMPLOYEE50 SET STATUS=NULL;\par
+COMMIT;\par
+\par
+\highlight1 --JOB WITH STORE PROCEDURE\highlight0\par
+BEGIN\par
+DBMS_SCHEDULER.create_job(\par
+job_name => 'fifth_job',\par
+job_type => 'STORED_PROCEDURE',\par
+job_action => 'UPD_STATUS',\par
+start_date => '08-SEP-2022 04.06.00 PM',\par
+end_date => NULL,\par
+enabled => TRUE,\par
+comments => 'my fourth test job');\par
+END;\par
+SELECT * FROM EMPLOYEE50;\par
+\par
+CREATE TABLE ACCOUNT_MST\par
+(ACCNO NUMBER(3) primary key,\par
+CNAME VARCHAR2(25),\par
+BALANCE NUMBER(11,2));\par
+\par
+CREATE TABLE TRANS_DTLS\par
+(TRANID NUMBER(3),\par
+ACCNO NUMBER(3),\par
+AMOUNT NUMBER(11,2),\par
+TRANSDT DATE);\par
+INSERT INTO ACCOUNT_MST VALUES(100,'ALOKE',60000);\par
+INSERT INTO ACCOUNT_MST VALUES(200,'AYAN',66000);\par
+COMMIT;\par
+SELECT * FROM ACCOUNT_MST;\par
+\par
+CREATE SEQUENCE TRN_SEQ\par
+START WITH 1\par
+INCREMENT BY 1\par
+MAXVALUE 999\par
+NOCACHE\par
+NOCYCLE;\par
+\par
+CREATE OR REPLACE PROCEDURE MODIFY_ACCOUNTS\par
+(V_ACCNO ACCOUNT_MST.ACCNO%TYPE)\par
+IS\par
+BEGIN\par
+INSERT INTO TRANS_DTLS VALUES(TRN_SEQ.NEXTVAL,100,5000,SYSDATE);\par
+UPDATE ACCOUNT_MST SET BALANCE=BALANCE-5000 WHERE ACCNO=V_ACCNO;\par
+COMMIT;\par
+END;\par
+\highlight1 ---JOB\highlight0\par
+BEGIN\par
+DBMS_SCHEDULER.create_job(\par
+job_name => 'seven_job',\par
+job_type => 'PLSQL_BLOCK',\par
+job_action => 'declare begin MODIFY_ACCOUNTS(100); end; ',\par
+start_date => '08-SEP-2022 04.59.00 PM',\par
+end_date => NULL,\par
+enabled => TRUE,\par
+comments => 'my sixth test job');\par
+END;\par
+\par
+select * from account_mst;\par
+select * from TRANS_DTLS;\par
+\highlight1 --GLOBAL TEMPORARY TABLE CREATION\highlight0\par
+CREATE GLOBAL TEMPORARY TABLE EMP_DEPT_TEMP\par
+(ENAME VARCHAR2(25),\par
+ SAL   NUMBER(11,2),\par
+ DESIG  VARCHAR2(25),\par
+ DEPTNO NUMBER(3),\par
+ DNAME VARCHAR2(25))\par
+ ON COMMIT PRESERVE ROWS;\par
+ CREATE OR REPLACE PROCEDURE CHECK_EMPID\par
+ (V_EID EMP.EID%TYPE)\par
+ IS\par
+ V_ENAME EMP.ENAME%TYPE;\par
+ V_SAL   EMP.SAL%TYPE;\par
+ V_DESIG EMP.DESIG%TYPE;\par
+ V_DEPTNO DEPT.DEPTNO%TYPE;\par
+ V_DNAME  DEPT.DNAME%TYPE;\par
+ BEGIN\par
+ SELECT E.ENAME,E.SAL,E.DESIG,D.DEPTNO,D.DNAME INTO V_ENAME,V_SAL,V_DESIG,V_DEPTNO,V_DNAME  FROM EMP E,DEPT D WHERE E.DEPTNO=D.DEPTNO AND  E.EID=V_EID;\par
+ INSERT INTO EMP_DEPT_TEMP VALUES(V_ENAME,V_SAL,V_DESIG,V_DEPTNO,V_DNAME);\par
+ COMMIT;\par
+ END;\par
+ SELECT * FROM EMP_DEPT_TEMP;\par
+ EXECUTE CHECK_EMPID('E1');\par
+ \par
+ \highlight1 --TYPE CREATION\highlight0\par
+ CREATE OR REPLACE TYPE ADDRESS_TY AS OBJECT\par
+ (PLOTNO VARCHAR2(15),\par
+  STREET VARCHAR2(25),\par
+  STATE  VARCHAR2(25),\par
+  PINCODE VARCHAR2(6)\par
+  );\par
+  DECLARE\par
+  RESIDENCE ADDRESS_TY;\par
+  BEGIN\par
+  RESIDENCE :=ADDRESS_TY('AD10','SALTLAKE CITY','WB','700064');\par
+  DBMS_OUTPUT.PUT_LINE('PLOTNO:'||RESIDENCE.PLOTNO);\par
+  DBMS_OUTPUT.PUT_LINE('STREET:'||RESIDENCE.STREET);\par
+  DBMS_OUTPUT.PUT_LINE('STATE:'||RESIDENCE.STATE);\par
+  DBMS_OUTPUT.PUT_LINE('PINCODE:'||RESIDENCE.PINCODE);\par
+  END;\par
+\highlight1 --More Example\highlight0\par
+CREATE TABLE CUSTOMER12\par
+(CID VARCHAR2(10),\par
+ CNM VARCHAR2(25),\par
+ CADDR ADDRESS_TY,\par
+ CPHNO VARCHAR2(10),\par
+ CONSTRAINTS CUSTOMER12_CID_PK PRIMARY KEY(CID)\par
+ );\par
+ DESC CUSTOMER12;\par
+ INSERT INTO CUSTOMER12 VALUES('C1','SUMAN',ADDRESS_TY('AC10','BEADON STREER','KOLKATA','WB'),'222');\par
+ INSERT INTO CUSTOMER12 VALUES('C2','ALOKE',ADDRESS_TY('AC50','BEADON STREER','KOLKATA','WB'),'333');\par
+ SELECT C.CID,C.CADDR.PLOTNO PLOTNO,C.CADDR.STATE STATE,CPHNO FROM CUSTOMER12 C;\par
+------------------------------------------------------------------------------------------------------------------------------------------\par
+\highlight1 --VARRAY\highlight0\par
+ DECLARE \par
+ TYPE NMARRAY IS VARRAY(5) OF VARCHAR2(25);\par
+ NAMES NMARRAY;\par
+ TOTAL NUMBER;\par
+ BEGIN\par
+ NAMES :=NMARRAY('ALOKE','NISHAN','VINOD','ROBIN','SAYAN');\par
+ TOTAL :=NAMES.COUNT;\par
+ FOR I IN 1.. TOTAL LOOP\par
+ DBMS_OUTPUT.PUT_LINE('EMPLOYEE:'||NAMES(I));\par
+  END LOOP;\par
+  DBMS_OUTPUT.PUT_LINE('COUNT:'||TOTAL);\par
+ END;\par
+ \highlight1 --More Example\highlight0\par
+ CREATE OR REPLACE TYPE MEM_VA AS VARRAY(5) OF VARCHAR2(25);\par
+ CREATE TABLE PROJECT_INF\par
+ (PROJID VARCHAR2(10),\par
+  PROJNM VARCHAR2(25),\par
+  PROJLD VARCHAR2(25),\par
+  MEMBERS  MEM_VA);\par
+  DESC PROJECT_INF;\par
+  INSERT INTO PROJECT_INF VALUES('PJ1','XYZ','AYAN',MEM_VA('A','B','C','D','E'));\par
+  COMMIT;\par
+  SEELCT * FROM PROJECT_INF;\par
+\par
+\highlight1 --PL/SQL RECORD\highlight0\par
+  DECLARE\par
+   TYPE BOOK IS RECORD\par
+   (TITLE VARCHAR2(25),\par
+    AUTHOR VARCHAR2(25),\par
+    SUBJECT VARCHAR2(25),\par
+    BOOK_ID NUMBER);\par
+    BOOK1 BOOK;\par
+    BEGIN\par
+    BOOK1.TITLE :='ORACLE DBA';\par
+    BOOK1.AUTHOR :='BURLESON';\par
+    BOOK1.SUBJECT :='DBA';\par
+    BOOK1.BOOK_ID :=4343;\par
+    DBMS_OUTPUT.PUT_LINE('TITLE :'||BOOK1.TITLE);\par
+    DBMS_OUTPUT.PUT_LINE('AUTHOR :'||BOOK1.AUTHOR);\par
+    DBMS_OUTPUT.PUT_LINE('SUBJECT :'||BOOK1.SUBJECT);\par
+    DBMS_OUTPUT.PUT_LINE('BOOK_ID :'||BOOK1.BOOK_ID);\par
+    END;\par
+\par
+}
+ 
